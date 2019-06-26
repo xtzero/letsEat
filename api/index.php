@@ -1,6 +1,6 @@
 <?php
 //错误提示
-error_reporting(E_ALL);
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 //配置时区
 date_default_timezone_set('PRC');
