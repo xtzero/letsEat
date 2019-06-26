@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天吃这么多 | yoyo点菜台</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="js/fingerprint2.min.1.5.1.js"></script>
+    <script src="js/index.js"></script>
+    <style type="text/css">
+        body{
+            background-color: #34537c;
+            color: white;
+            margin: 0;
+        }
+
+        .mainContainer{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .banner{
+            width: 100%;
+            height: 20vh;
+            border-bottom: solid 1px white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner-title{
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+        .banner-subtitle{
+            color: lightgray;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+
+        .list{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-item{
+            width: 100%;
+            min-height: 66px;
+            display: flex;
+            flex-direction: column;
+            border-bottom: solid 1px white;
+        }
+
+        .list-item-thin{
+            height: 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .list-item-thin:hover{
+            background-color: white;
+            color: #34537c;
+        }
+
+        .list-item-thin:active{
+            background-color: white;
+            color: #34537c;
+        }
+
+        .list-item>div{
+            margin: 2px 0;
+            margin-left: 10px;
+        }
+
+        .title{
+            margin-top: 10px !important;
+            font-size: 20px;
+        }
+
+        .subtitle{
+            font-size: 13px;
+        }
+
+        .time{
+            font-size: 13px;
+            color: lightgray;
+        }
+
+        .detail{
+            font-size: 13px;
+            margin-bottom: 10px !important;
+            color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <div class="mainContainer" id="vBody">
+        <div class="banner">
+            <div class="banner-title">yoyo点菜台</div>
+            <div class="banner-subtitle">{{slogan}}</div>
+        </div>
+        <div class="list">
+            <div class="list-item list-item-thin">
+                + 创建组队
+            </div>
+            <div class="list-item" v-for="(v,k) in list">
+                <div class="title">{{v.title}}</div>
+                <div class="subtitle">{{v.subtitle}}</div>
+                <div class="time">{{v.create_time}}由 {{v.username}} 创建</div>
+                <div class="detail">{{v.userCount}} 个人已参加，{{v.foodCount}} 种吃的已预订</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var slogan = [
+            '让阿姨不再随机',
+            'yoyo姐再也不用担心记不住想吃啥了'
+        ];
+
+        var v = new Vue({
+            el: '#vBody',
+            data: {
+                slogan: '',
+                list: [],
+                houseId: false
+            },
+            methods: {
+                getHouseList(){
+                    var _this = this;
+                    get('getHouseList',{},function(res){
+                        if (res.code == 200) {
+                            _this.list = res.data;
+                        } else {
+                            alert(res.msg);
+                        }
+                    });
+                }
+            },
+            created(){
+                this.slogan = slogan[rand(0,slogan.length-1)];
+                this.getHouseList();
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>正在进入→yoyo点菜台</title>
+    <script src="js/fingerprint2.min.1.5.1.js"></script>
+    <script src="js/index.js"></script>
+</head>
+<body>
+    <div>正在验证当前用户</div>
+</body>
+<script>
+    function jumpToMain(){
+        window.location.href = 'main.html';
+    }
+
+    window.onload = function(){
+        getClientSign(function(userid){
+            get('getUser', {
+                'userid': userid
+            }, function(res) {
+                if (res.code == 200) {
+                    if (res.msg == '该用户不存在') {
+                        var name = prompt('你是新来的，给自己起个名字吧。没名字吃个懒子饭？', '输入一个响亮的名字，例如：yoyo姐');
+                        get('addUser', {
+                            userid: userid,
+                            name: name
+                        }, function(res2){
+                            if (res2.code == 200) {
+                                jumpToMain();
+                            } else {
+                                alert(res2.msg);
+                            }
+                        });
+                    } else {
+                        jumpToMain();
+                    }
+                } else {
+                    alert(res.msg);
+                }
+            });
+        });
+    }
+</script>
+</html>
