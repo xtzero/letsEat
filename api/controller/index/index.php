@@ -42,7 +42,7 @@ class index extends coreController {
         if (!empty($houseList)) {
             $houseIds= implode(',', array_column($houseList, 'id'));
             $userids= "'".implode("','", array_column($houseList, 'create_user'))."'";
-            $foodCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(id) AS c')->group('house_id')->where("house_id IN ({$houseIds}) AND valid=1")->query();
+            $foodCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(id) AS c')->group('title')->where("house_id IN ({$houseIds}) AND valid=1")->query();
             $houseIdToFoodCount = array_key_values('house_id', $foodCount);
             $userCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT userid) AS c')->group('house_id')->where("house_id IN ({$houseIds}) AND valid=1")->query();
             $houseIdToUserCount = array_key_values('house_id', $userCount);
@@ -59,6 +59,23 @@ class index extends coreController {
             ajax(201, '没有任何数据');
         }
 
+    }
+
+    public function getHouseDetail()
+    {
+        $this->param('houseId');
+        $ifHouseExist = $this->coreModel->table('house')->mode('select')->where("id={$this->params['houseId']}")->query();
+        if (empty($ifHouseExist)) {
+            ajax(400, '这个房间id不存在');
+        }
+
+        $foodCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT title) AS c')->where("house_id={$this->houseId} AND valid=1")->query();
+        $userCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT userid) AS c')->where("house_id={$this->houseId} AND valid=1")->query();
+        ajax(200, '成功', [
+            'detail' => $ifHouseExist[0],
+            'foodCount' => $foodCount[0]['c']?$foodCount[0]['c']:0,
+            'userCount' => $userCount[0]['c']?$userCount[0]['c']:0
+        ]);
     }
 
     public function addFoodToHouse()
