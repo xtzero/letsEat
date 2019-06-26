@@ -70,12 +70,13 @@ class index extends coreController {
         }
         $addFood = $this->coreModel->table('list')->mode('insert')->data([
             'house_id' => $this->params['houseId'],
-            'create_user' => $this->params['userid'],
+            'userid' => $this->params['userid'],
             'title' => $this->params['foodTitle'],
             'subtitle' => $this->params['foodSubtitle'],
             'create_time' => date('Y-m-d H:i:s'),
             'valid' => 1
         ])->query();
+        var_dump($this->coreModel->sql());
         if ($addFood) {
             ajax(200, '成功');
         } else {
