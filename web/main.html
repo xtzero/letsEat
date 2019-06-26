@@ -177,20 +177,28 @@
             margin-bottom: 10px !important;
             color: lightgray;
         }
+
+        .addSay{
+            margin-left: 5px;
+            font-size: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="mainContainer" id="vBody">
         <div class="banner">
             <div class="banner-title">yoyo点菜台</div>
-            <div class="banner-subtitle">{{slogan}}</div>
+            <div class="banner-subtitle">
+                <span class="slogan" @click="showSay(slogan)">{{slogan.say}}</span>
+                <!-- <span class="addSay" @click="addSay">[我也要写]</span> -->
+            </div>
         </div>
         <div class="list">
             <div class="list-item list-item-thin" @click="showPop=true">
                 + 创建组队
             </div>
-            <div class="list-item" v-for="(v,k) in list" @click="jumpToHouse(v)">
-                <div class="title">{{v.title}}</div>
+            <div class="list-item" v-for="(v,k) in list">
+                <div class="title" @click="jumpToHouse(v)">{{v.title}}</div>
                 <div class="subtitle">{{v.subtitle}}</div>
                 <div class="time">{{dxever_numToTime(v.create_time)}} 由 {{v.username}} 创建</div>
                 <div class="detail">{{v.userCount?v.userCount:0}} 个人已参加，{{v.foodCount?v.foodCount:0}} 种吃的已预订</div>
@@ -214,14 +222,16 @@
     <script>
         var slogan = [
             '让阿姨不再随机',
-            'yoyo姐再也不用担心记不住想吃啥了'
+            'yoyo姐再也不用担心记不住想吃啥了',
+            '这个需求弟弟做不了'
         ];
 
         var v = new Vue({
             el: '#vBody',
             data: {
                 currentUser: '',
-                slogan: '',
+                slogan: {},
+                sloganFormatTime: true,
                 list: [],
                 showPop: false,
                 addNew: {
@@ -262,6 +272,8 @@
                             if (res.code == 200) {
                                 _this.popControl(false);
                                 _this.getHouseList();
+                                _this.addNew.title = '';
+                                _this.addNew.subtitle = '';
                             } else {
                                 alert(res.msg);
                             }
@@ -280,15 +292,60 @@
                             }
                         });
                     }
+                },
+                showSay(say){
+                    var _this = this;
+                    var confirmText = ((function(time){
+                        if (_this.sloganFormatTime) {
+                            return _this.dxever_numToTime(time) + ' 的时候';
+                        } else {
+                            return time;
+                        }
+                    })(say.create_time))+say.username+' 写的，你也要写一个吗？';
+                    
+                    if (confirm(confirmText)) {
+                        _this.addSay();
+                    }
+                },
+                addSay(){
+                    var _this = this;
+                    var say = prompt('你要说点啥？');
+                    if (say != null && say != '') {
+                        get("addSays", {
+                            say: say,
+                            userid: _this.currentUser
+                        }, function(res){
+                            alert(res.msg);
+                            if (res.code == 200) {
+                                _this.slogan.say = say;
+                                _this.sloganFormatTime = false;
+                                _this.slogan.create_time = '刚才';
+                                _this.slogan.username = '伟大的你';
+                            }
+                        })
+                    }
+                },
+                getSay(){
+                    var _this = this;
+                    get('getSays', {}, function(res){
+                        if (res.code == 200) {
+                            var says = res.data;
+                            var slogan = says[rand(0,res.data.length-1)];
+                            console.log(slogan);
+                            _this.slogan = slogan;
+                        } else {
+                            alert(res.msg);
+                        }
+                    })
                 }
             },
             created(){
                 var _this = this;
-                _this.slogan = slogan[rand(0,slogan.length-1)];
                 getClientSign(function(userid){
                     _this.currentUser = userid
                 });
                 this.getHouseList();
+                this.getSay();
             }
         })
     </script>

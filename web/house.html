@@ -184,10 +184,10 @@
 <body>
     <div class="mainContainer" id="vBody">
         <div class="banner">
-            <div class="banner-title">{{houseDetail.title}}</div>
-            <div class="banner-subtitle">{{houseDetail.subtitle}}</div>
-            <div class="banner-subtitle">{{houseDetail.username}} 于{{dxever_numToTime(houseDetail.create_time)}} 创建</div>
-            <div class="banner-subtitle">{{houseDetail.userCount?houseDetail.userCount:0}} 人已参与, {{houseDetail.foodCount?houseDetail.foodCount:0}} 种吃的已预订</div>
+            <div class="banner-title">{{houseDetail.detail.title}}</div>
+            <div class="banner-subtitle">{{houseDetail.detail.subtitle}}</div>
+            <div class="banner-subtitle">{{houseDetail.detail.username}} 于{{dxever_numToTime(houseDetail.detail.create_time)}} 创建</div>
+            <div class="banner-subtitle">{{houseDetail.userCount?houseDetail.userCount:0}} 人已参与, {{houseDetail.foodCount?houseDetail.foodCount:0}} 种吃的已预订，共 {{list.length}} 条数据</div>
         </div>
         <div class="list">
             <div class="list-item list-item-thin" @click="displayPop">+ 我也吃点啥</div>
@@ -242,6 +242,7 @@
             methods: {
                 getFoodList(){
                     var _this = this;
+                    _this.getHouseDetail();
                     _this.listErrorTip = '';
                     _this.list = [];
                     get('getFoodList',{
@@ -293,6 +294,8 @@
                         if (res.code == 200) {
                             _this.getFoodList();
                             _this.showPop = false;
+                            _this.addNew.title = '';
+                            _this.addNew.subtitle = '';
                         }
                     });
                 },
@@ -316,6 +319,9 @@
                     });
                 }
             },
+            computed: {
+                
+            },
             created(){
                 var _this = this;
                 getClientSign(function(userid){
@@ -330,7 +336,6 @@
                     this.houseId = houseId;
                 }
                 this.getFoodList();
-                this.getHouseDetail();
             }
         })
     </script>

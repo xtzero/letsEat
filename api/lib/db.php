@@ -5,7 +5,7 @@ class db{
     private $db_usr;
     private $db_pwd;
 
-    private $dbConfFile = '/var/xtDbConf/mysql';
+    private $dbConfFile = 'D:\mysql';
     private $db;
     private static $obj = null;
 
