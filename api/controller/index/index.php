@@ -71,6 +71,8 @@ class index extends coreController {
 
         $foodCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT title) AS c')->where("house_id={$this->houseId} AND valid=1")->query();
         $userCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT userid) AS c')->where("house_id={$this->houseId} AND valid=1")->query();
+        $userInfo = $this->coreModel->table('user')->mode('select')->field('*')->where("id={$ifHouseExist[0]['create_user']}")->query();
+        $ifHouseExist[0]['username'] = $userInfo[0]['name']?$userInfo[0]['name']:'';
         ajax(200, '成功', [
             'detail' => $ifHouseExist[0],
             'foodCount' => $foodCount[0]['c']?$foodCount[0]['c']:0,
