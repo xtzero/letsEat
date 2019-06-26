@@ -192,6 +192,7 @@
         <div class="list">
             <div class="list-item list-item-thin" @click="displayPop">+ 我也吃点啥</div>
             <div class="list-item list-item-thin" @click="share">+ 拉人一起吃</div>
+            <div class="list-item list-item-thin" @click="newRace">开个新车</div>
             <div class="list-tip" v-show="listErrorTip!=''">{{listErrorTip}}</div>
             <div class="list-item" v-for="(v,k) in list">
                 <div class="title">{{v.title}}</div>
@@ -317,6 +318,9 @@
                             alert(res.msg)
                         }
                     });
+                },
+                newRace(){
+                    window.location.href='main.html';
                 }
             },
             computed: {
@@ -326,6 +330,29 @@
                 var _this = this;
                 getClientSign(function(userid){
                     _this.currentUser = userid
+                    get('getUser', {
+                        'userid': userid
+                    }, function(res) {
+                        if (res.code == 200) {
+                            if (res.msg == '该用户不存在') {
+                                var name = prompt('你是新来的，给自己起个名字吧。', '输入一个响亮的名字，例如：yoyo姐');
+                                get('addUser', {
+                                    userid: userid,
+                                    name: name
+                                }, function(res2){
+                                    if (res2.code == 200) {
+                                        jumpToMain();
+                                    } else {
+                                        alert(res2.msg);
+                                    }
+                                });
+                            } else {
+                                jumpToMain();
+                            }
+                        } else {
+                            alert(res.msg);
+                        }
+                    });
                 });
                 _this.slogan = slogan[rand(0,slogan.length-1)];
                 var houseId = param('houseid');

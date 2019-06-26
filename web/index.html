@@ -23,7 +23,7 @@
             }, function(res) {
                 if (res.code == 200) {
                     if (res.msg == '该用户不存在') {
-                        var name = prompt('你是新来的，给自己起个名字吧。没名字吃个懒子饭？', '输入一个响亮的名字，例如：yoyo姐');
+                        var name = prompt('你是新来的，给自己起个名字吧。', '输入一个响亮的名字，例如：yoyo姐');
                         get('addUser', {
                             userid: userid,
                             name: name
