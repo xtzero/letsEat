@@ -86,7 +86,7 @@ class index extends coreController {
     public function getFoodList()
     {
         $this->param('houseId');
-        $ifHouseExist = $this->coreModel->table('house')->mode('select')->where("id={$this->params['houseId']} AND valid=0")->query();
+        $ifHouseExist = $this->coreModel->table('house')->mode('select')->where("id={$this->params['houseId']} AND valid=1")->query();
         if (empty($ifHouseExist)) {
             ajax(400, '这个房间id不存在');
         }
