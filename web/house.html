@@ -39,7 +39,7 @@
         .banner-subtitle{
             color: lightgray;
             font-size: 13px;
-            margin: 10px 0;
+            margin-top: 10px;
         }
 
         .list{
@@ -98,25 +98,120 @@
             margin-bottom: 10px !important;
             color: lightgray;
         }
+
+        .mask{
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .pop{
+            position: fixed;
+            width: 80vw;
+            height: 50vh;
+            background-color: white;
+            top: 25vh;
+            left: 10vw;
+            display: flex;
+            flex-direction: column;
+            border-radius: 5px;
+        }
+
+        .pop *{
+            color: black;
+        }
+
+        .pop-close{
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 33px;
+            height: 33px;
+            color: black;
+            font-size: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 20px;
+        }
+        
+        .pop-title{
+            font-size: 25px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .label{
+            width: 100%;
+            height: 22px;
+            font-size: 13px;
+            margin-left: 5px;
+            margin-top: 20px;
+        }
+
+        .pop>input{
+            border-style: none;
+            border-bottom: solid lightgray 1px;
+            height: 33px;
+            font-size: 20px;
+            padding-left: 5px;
+        }
+
+        .pop-btn{
+            width: 50vw;
+            margin-left: 15vw;
+            height: 44px;
+            background-color: #34537c;
+            color: white;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 2px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .list-tip{
+            width: 100%;
+            text-align: center;
+            color: lightgray;
+            font-size: 13px;
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
     <div class="mainContainer" id="vBody">
         <div class="banner">
-            <div class="banner-title">yoyo点菜台</div>
-            <div class="banner-subtitle">{{slogan}}</div>
+            <div class="banner-title">{{houseDetail.title}}</div>
+            <div class="banner-subtitle">{{houseDetail.subtitle}}</div>
+            <div class="banner-subtitle">{{houseDetail.username}} 于{{dxever_numToTime(houseDetail.create_time)}} 创建</div>
+            <div class="banner-subtitle">{{houseDetail.userCount?houseDetail.userCount:0}} 人已参与, {{houseDetail.foodCount?houseDetail.foodCount:0}} 种吃的已预订</div>
         </div>
         <div class="list">
-            <div class="list-item list-item-thin">+ 我也吃点啥</div>
-            <div class="list-item list-item-thin">+ 拉人一起吃</div>
+            <div class="list-item list-item-thin" @click="displayPop">+ 我也吃点啥</div>
+            <div class="list-item list-item-thin" @click="share">+ 拉人一起吃</div>
+            <div class="list-tip" v-show="listErrorTip!=''">{{listErrorTip}}</div>
             <div class="list-item" v-for="(v,k) in list">
                 <div class="title">{{v.title}}</div>
                 <div class="subtitle">{{v.subtitle}}</div>
                 <div class="time">{{v.create_time}}由 {{v.username}} 创建</div>
                 <div class="do">
-                    <span class="do-item">[删除]</span>
-                    <span class="do-item">[我也吃]</span>
+                    <span class="do-item" @click="delEat(v.id)" v-show="currentUser==v.userid">[删除]</span>
+                    <span class="do-item" @click="followEat(v)">[我也吃]</span>
                 </div>
+            </div>
+        </div>
+        <div class="mask" v-show="showPop">
+            <div class="pop">
+                <div class="pop-close" @click="showPop=false">×</div>
+                <div class="pop-title">{{pop.title}}</div>
+                <div class="label">吃啥</div>
+                <input type="text" name="title" id="title" class="text" v-model="addNew.title">
+                <div class="label">备注</div>
+                <input type="text" name="title" id="title" class="text" v-model="addNew.subtitle">
+                <div class="pop-btn" @click="addNewF">添 加</div>
             </div>
         </div>
     </div>
@@ -129,29 +224,104 @@
         var v = new Vue({
             el: '#vBody',
             data: {
+                currentUser: '',
                 slogan: '',
                 list: [],
-                houseId: false
+                houseId: false,
+                showPop: false,
+                addNew: {
+                    title: '',
+                    subtitle: ''
+                },
+                pop: {
+                    title: '我想吃……'
+                },
+                listErrorTip: '',
+                houseDetail: {}
             },
             methods: {
                 getFoodList(){
                     var _this = this;
+                    _this.listErrorTip = '';
+                    _this.list = [];
                     get('getFoodList',{
                         houseId: _this.houseId
                     },function(res){
                         if (res.code == 200) {
                             _this.list = res.data;
                         } else {
-                            alert(res.msg);
+                            _this.listErrorTip = res.msg;
                         }
                     });
                 },
-                followEat(){
-                    //跟着吃    
+                followEat(v){
+                    var _this = this;
+                    _this.pop.title = '我是跟风狗';
+                    _this.addNew.title = v.title;
+                    _this.addNew.subtitle = v.subtitle;
+                    _this.showPop = true;
+                },
+                delEat(id){
+                    var _this = this;
+                    if (confirm('确定要删除这个吃的吗？')) {
+                        get('delEat', {
+                            eatId: id
+                        }, function(res){
+                            alert(res.msg);
+                            if (res.code == 200) {
+                                _this.getFoodList();
+                            }
+                        });
+                    }
+                },
+                share(){
+                    document.title = '在？一起订饭不？';
+                    alert('将当前页面分享给好友，好友点击链接即可参与~');
+                },
+                dxever_numToTime(time){
+                    return dxever_numToTime((Date.parse(time)/1000))
+                },
+                addNewF(){
+                    var _this = this;
+                    get('addFoodToHouse', {
+                        houseId: _this.houseId,
+                        userid: _this.currentUser,
+                        foodTitle: _this.addNew.title,
+                        foodSubtitle: _this.addNew.subtitle
+                    }, function(res) {
+                        alert(res.msg);
+                        if (res.code == 200) {
+                            _this.getFoodList();
+                            _this.showPop = false;
+                        }
+                    });
+                },
+                displayPop(){
+                    var _this = this;
+                    if (_this.pop.title == '我是跟风狗') {
+                        _this.pop.title = '我想吃……';
+                    }
+                    _this.showPop = true;
+                },
+                getHouseDetail(){
+                    var _this = this;
+                    get('getHouseDetail', {
+                        houseId: _this.houseId
+                    }, function(res){
+                        if (res.code == 200) {
+                            _this.houseDetail = res.data;
+                        } else {
+                            alert(res.msg)
+                        }
+                    });
                 }
             },
             created(){
-                this.slogan = slogan[rand(0,slogan.length-1)];
+                var _this = this;
+                getClientSign(function(userid){
+                    _this.currentUser = userid
+                });
+                _this.slogan = slogan[rand(0,slogan.length-1)];
                 var houseId = param('houseid');
                 if (!houseId) {
                     alert('没有房间id你玩啥呢');
@@ -160,6 +330,7 @@
                     this.houseId = houseId;
                 }
                 this.getFoodList();
+                this.getHouseDetail();
             }
         })
     </script>

@@ -98,6 +98,85 @@
             margin-bottom: 10px !important;
             color: lightgray;
         }
+
+        .mask{
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .pop{
+            position: fixed;
+            width: 80vw;
+            height: 50vh;
+            background-color: white;
+            top: 25vh;
+            left: 10vw;
+            display: flex;
+            flex-direction: column;
+            border-radius: 5px;
+        }
+
+        .pop *{
+            color: black;
+        }
+
+        .pop-close{
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 33px;
+            height: 33px;
+            color: black;
+            font-size: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 20px;
+        }
+        
+        .pop-title{
+            font-size: 25px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .label{
+            width: 100%;
+            height: 22px;
+            font-size: 13px;
+            margin-left: 5px;
+            margin-top: 20px;
+        }
+
+        .pop>input{
+            border-style: none;
+            border-bottom: solid lightgray 1px;
+            height: 33px;
+            font-size: 20px;
+            padding-left: 5px;
+        }
+
+        .pop-btn{
+            width: 50vw;
+            margin-left: 15vw;
+            height: 44px;
+            background-color: #34537c;
+            color: white;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 2px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .do{
+            font-size: 13px;
+            margin-bottom: 10px !important;
+            color: lightgray;
+        }
     </style>
 </head>
 <body>
@@ -107,14 +186,28 @@
             <div class="banner-subtitle">{{slogan}}</div>
         </div>
         <div class="list">
-            <div class="list-item list-item-thin">
+            <div class="list-item list-item-thin" @click="showPop=true">
                 + 创建组队
             </div>
-            <div class="list-item" v-for="(v,k) in list" @click="jumpToHouse(v.id)">
+            <div class="list-item" v-for="(v,k) in list" @click="jumpToHouse(v)">
                 <div class="title">{{v.title}}</div>
                 <div class="subtitle">{{v.subtitle}}</div>
                 <div class="time">{{dxever_numToTime(v.create_time)}} 由 {{v.username}} 创建</div>
-                <div class="detail">{{v.userCount}} 个人已参加，{{v.foodCount}} 种吃的已预订</div>
+                <div class="detail">{{v.userCount?v.userCount:0}} 个人已参加，{{v.foodCount?v.foodCount:0}} 种吃的已预订</div>
+                <div class="do" v-show="currentUser==v.create_user">
+                    <span class="do-item" @click="delHouse(v.id)">[删除]</span>
+                </div>
+            </div>
+        </div>
+        <div class="mask" v-show="showPop">
+            <div class="pop">
+                <div class="pop-close" @click="showPop=false">×</div>
+                <div class="pop-title">创建队伍</div>
+                <div class="label">队伍标题</div>
+                <input type="text" name="title" id="title" class="text" v-model="addNew.title">
+                <div class="label">备注</div>
+                <input type="text" name="title" id="title" class="text" v-model="addNew.subtitle">
+                <div class="pop-btn" @click="addNewF">添 加</div>
             </div>
         </div>
     </div>
@@ -127,12 +220,19 @@
         var v = new Vue({
             el: '#vBody',
             data: {
+                currentUser: '',
                 slogan: '',
-                list: []
+                list: [],
+                showPop: false,
+                addNew: {
+                    title: '',
+                    subtitle: ''
+                }
             },
             methods: {
                 getHouseList(){
                     var _this = this;
+                    _this.list = [];
                     get('getHouseList',{},function(res){
                         if (res.code == 200) {
                             _this.list = res.data;
@@ -144,12 +244,50 @@
                 dxever_numToTime(time){
                     return dxever_numToTime((Date.parse(time)/1000))
                 },
-                jumpToHouse(houseId){
-                    window.location.href = 'house.html?houseid='+houseId
+                jumpToHouse(v){
+                    localStorage.setItem('v', JSON.stringify(v));
+                    window.location.href = 'house.html?houseid='+v.id;
+                },
+                popControl(show){
+                    this.showPop = show;
+                },
+                addNewF(){
+                    var _this = this;
+                    getClientSign(function(userid){
+                        get("addHouse", {
+                            userid: userid,
+                            houseTitle: _this.addNew.title,
+                            houseSubtitle: _this.addNew.subtitle
+                        }, function(res){
+                            if (res.code == 200) {
+                                _this.popControl(false);
+                                _this.getHouseList();
+                            } else {
+                                alert(res.msg);
+                            }
+                        });
+                    })
+                },
+                delHouse(id){
+                    var _this = this;
+                    if (confirm('确定要删除这个房间吗？')) {
+                        get('delHouse', {
+                            houseId: id
+                        }, function(res){
+                            alert(res.msg)
+                            if (res.code == 200) {
+                                _this.getHouseList();
+                            }
+                        });
+                    }
                 }
             },
             created(){
-                this.slogan = slogan[rand(0,slogan.length-1)];
+                var _this = this;
+                _this.slogan = slogan[rand(0,slogan.length-1)];
+                getClientSign(function(userid){
+                    _this.currentUser = userid
+                });
                 this.getHouseList();
             }
         })

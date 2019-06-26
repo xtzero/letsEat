@@ -11,5 +11,6 @@ return [
     'addUser' => 'index/index/addUser',
     'getUser' => 'index/index/getUser',
     'delHouse' => 'index/index/delHouse',
-    'delEat' => 'index/index/delEat'
+    'delEat' => 'index/index/delEat',
+    'getHouseDetail' => 'index/index/getHouseDetail'
 ];

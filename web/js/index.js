@@ -6,6 +6,7 @@ function get(apiRoute,param,cb){
 	var xhr = new XMLHttpRequest();
 	xhr.open("get", url, true);
 	xhr.onload = function(res){
+		console.log(url,res);
 		cb && cb(JSON.parse(res.currentTarget.response),res);
 	}
 
