@@ -10,6 +10,7 @@ class index extends coreController {
 
     public function __construct()
     {
+        crossDomain();
         $this->coreModel = new coreModel();
     }
 
@@ -112,6 +113,17 @@ class index extends coreController {
             }
         } else {
             ajax(400, '该用户已存在');
+        }
+    }
+
+    public function getUser()
+    {
+        $this->param('userid');
+        $ifUserExist = $this->coreModel->table('user')->mode('select')->where("id='{$this->params['userid']}'")->query();
+        if (empty($ifUserExist)){
+            ajax(200, '该用户不存在');
+        } else {
+            ajax(200, '该用户已存在');
         }
     }
 }
