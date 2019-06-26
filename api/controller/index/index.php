@@ -182,4 +182,26 @@ class index extends coreController {
             ajax(400, '失败');
         }
    }
+
+   public function addSays()
+   {
+       $this->param('say,userid');
+       $addSays = $this->coreModel->table('says')->mode('insert')->data([
+           'say' => $this->params['say'],
+           'valid' => 1,
+           'create_user' => $this->params['userid'],
+           'create_time' => date('Y-m-d H:i:s')
+       ])->query();
+
+       if ($addSays) {
+           ajax(200, '成功');
+       } else {
+           ajax(400, '失败');
+       }
+   }
+   public function getSays()
+   {
+       $getSays = $this->coreModel->table('says')->mode('select')->join('left join user u on says.create_user=u.id')->field('says.*,u.name as username')->query();
+       ajax(200, '', $getSays);
+   }
 }
