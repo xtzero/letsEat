@@ -141,7 +141,7 @@ class coreModel{
                         }
                     })($this->_alias)).((function($j){
                         if (!empty($j)) {
-                            return implode(' ', $j);
+                            return implode(' ', $j).' ';
                         } else {
                             return ' ';
                         }
