@@ -348,25 +348,27 @@
                     }, function(res) {
                         if (res.code == 200) {
                             if (res.msg == '该用户不存在') {
-                                var name = prompt('你是新来的，给自己起个名字吧。', '输入一个响亮的名字，例如：yoyo姐');
-                                get('addUser', {
-                                    userid: userid,
-                                    name: name
-                                }, function(res2){
-                                    if (res2.code == 200) {
-                                        jumpToMain();
-                                    } else {
-                                        alert(res2.msg);
-                                    }
-                                });
-                            } else {
-                                jumpToMain();
+                                var name = prompt("你是新来的，给自己起个名字吧。\n例如：yoyo姐");
+                                if (name != null && name != '') {
+                                    get('addUser', {
+                                        userid: userid,
+                                        name: name
+                                    }, function(res2){
+                                        if (res2.code == 200) {
+                                            
+                                        } else {
+                                            alert(res2.msg);
+                                        }
+                                    });
+                                } else {
+                                    window.location.reload();
+                                }
                             }
                         } else {
                             alert(res.msg);
                         }
                     });
-                });
+                });     
                 this.getHouseList();
                 this.getSay();
             }
