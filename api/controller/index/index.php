@@ -76,7 +76,6 @@ class index extends coreController {
             'create_time' => date('Y-m-d H:i:s'),
             'valid' => 1
         ])->query();
-        var_dump($this->coreModel->sql());
         if ($addFood) {
             ajax(200, '成功');
         } else {
