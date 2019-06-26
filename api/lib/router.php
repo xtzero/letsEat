@@ -9,5 +9,7 @@ return [
     'addFoodToHouse' => 'index/index/addFoodToHouse',
     'getFoodList' => 'index/index/getFoodList',
     'addUser' => 'index/index/addUser',
-    'getUser' => 'index/index/getUser'
+    'getUser' => 'index/index/getUser',
+    'delHouse' => 'index/index/delHouse',
+    'delEat' => 'index/index/delEat'
 ];

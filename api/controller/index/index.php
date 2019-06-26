@@ -136,4 +136,31 @@ class index extends coreController {
             ajax(200, '该用户已存在');
         }
     }
+
+    public function delHouse()
+    {
+        $this->param('houseId');
+        $delHouse = $this->coreModel->table('house')->mode('update')->data([
+            'valid' => 0
+        ])->where("id={$this->params['houseId']}")->query();
+        if ($delHouse) {
+            ajax(200, '成功');
+        } else {
+            ajax(400, '失败');
+        }
+    }
+
+    public function delEat()
+    {
+        $this->param('eatId');
+        $delEat = $this->coreModel->table('list')->mode('update')->data([
+            'valid' => 0
+        ])->where("id={$this->params['eatId']}")->query();
+
+        if ($delEat) {
+            ajax(200, '成功');
+        } else {
+            ajax(400, '失败');
+        }
+   }
 }
