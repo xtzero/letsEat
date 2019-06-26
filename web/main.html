@@ -57,7 +57,7 @@
         }
 
         .list-item-thin{
-            height: 44px;
+            min-height: 44px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -110,7 +110,7 @@
             <div class="list-item list-item-thin">
                 + 创建组队
             </div>
-            <div class="list-item" v-for="(v,k) in list">
+            <div class="list-item" v-for="(v,k) in list" @click="jumpToHouse(v.id)">
                 <div class="title">{{v.title}}</div>
                 <div class="subtitle">{{v.subtitle}}</div>
                 <div class="time">{{dxever_numToTime(v.create_time)}} 由 {{v.username}} 创建</div>
@@ -143,6 +143,9 @@
                 },
                 dxever_numToTime(time){
                     return dxever_numToTime((Date.parse(time)/1000))
+                },
+                jumpToHouse(houseId){
+                    window.location.href = 'house.html?houseid='+houseId
                 }
             },
             created(){

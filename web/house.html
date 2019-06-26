@@ -57,7 +57,7 @@
         }
 
         .list-item-thin{
-            height: 44px;
+            min-height: 44px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -93,7 +93,7 @@
             color: lightgray;
         }
 
-        .detail{
+        .do{
             font-size: 13px;
             margin-bottom: 10px !important;
             color: lightgray;
@@ -107,14 +107,16 @@
             <div class="banner-subtitle">{{slogan}}</div>
         </div>
         <div class="list">
-            <div class="list-item list-item-thin">
-                + 创建组队
-            </div>
+            <div class="list-item list-item-thin">+ 我也吃点啥</div>
+            <div class="list-item list-item-thin">+ 拉人一起吃</div>
             <div class="list-item" v-for="(v,k) in list">
                 <div class="title">{{v.title}}</div>
                 <div class="subtitle">{{v.subtitle}}</div>
                 <div class="time">{{v.create_time}}由 {{v.username}} 创建</div>
-                <div class="detail">{{v.userCount}} 个人已参加，{{v.foodCount}} 种吃的已预订</div>
+                <div class="do">
+                    <span class="do-item">[删除]</span>
+                    <span class="do-item">[我也吃]</span>
+                </div>
             </div>
         </div>
     </div>
@@ -132,20 +134,32 @@
                 houseId: false
             },
             methods: {
-                getHouseList(){
+                getFoodList(){
                     var _this = this;
-                    get('getHouseList',{},function(res){
+                    get('getFoodList',{
+                        houseId: _this.houseId
+                    },function(res){
                         if (res.code == 200) {
                             _this.list = res.data;
                         } else {
                             alert(res.msg);
                         }
                     });
+                },
+                followEat(){
+                    //跟着吃    
                 }
             },
             created(){
                 this.slogan = slogan[rand(0,slogan.length-1)];
-                this.getHouseList();
+                var houseId = param('houseid');
+                if (!houseId) {
+                    alert('没有房间id你玩啥呢');
+                    window.location.href = 'main.html';
+                } else {
+                    this.houseId = houseId;
+                }
+                this.getFoodList();
             }
         })
     </script>
