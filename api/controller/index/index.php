@@ -20,11 +20,12 @@ class index extends coreController {
 
     public function addHouse()
     {
-        $this->param('userid,houseTitle');
+        $this->param('userid,houseTitle,houseSubtitle');
         $addHouse = $this->coreModel->table('house')->mode('insert')->data([
             'create_user' => $this->params['userid'],
             'create_time' => date('Y-m-d H:i:s'),
             'title' => $this->params['houseTitle'],
+            'subtitle' => $this->params['houseSubtitle'],
             'valid' => 1
         ])->query();
 
