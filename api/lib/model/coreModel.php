@@ -3,7 +3,7 @@ namespace lib;
 
 class coreModel{
     protected $_table = '';
-    protected $_where;
+    protected $_where = null;
     protected $_field = '*';
     protected $_join = [];
     protected $_sql = '';
@@ -15,8 +15,25 @@ class coreModel{
     protected $_data = [];
     protected $_group;
 
+    public function clear()
+    {
+        $this->_table = '';
+        $this->_where = null;
+        $this->_field = '*';
+        $this->_join = [];
+        $this->_sql = '';
+        $this->_mode = ''; //select insert update delete
+        $this->_page = 0;
+        $this->_limit = 0;
+        $this->_order = [];
+        $this->_alias = '';
+        $this->_data = [];
+        $this->_group = '';
+    }
+
     public function table($table)
     {
+        $this->clear();
         $this->_table = $table;
         return $this;
     }
