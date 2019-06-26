@@ -38,13 +38,13 @@ class index extends coreController {
 
     public function getHouseList()
     {
-        $houseList = $this->coreModel->table('house')->mode('select')->field('*')->order(['create_time DESC'])->query();
+        $houseList = $this->coreModel->table('house')->mode('select')->field('*')->where("valid=1")->order(['create_time DESC'])->query();
         if (!empty($houseList)) {
             $houseIds= implode(',', array_column($houseList, 'id'));
             $userids= "'".implode("','", array_column($houseList, 'create_user'))."'";
-            $foodCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(id) AS c')->group('house_id')->where("house_id IN ({$houseIds})")->query();
+            $foodCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(id) AS c')->group('house_id')->where("house_id IN ({$houseIds}) AND valid=1")->query();
             $houseIdToFoodCount = array_key_values('house_id', $foodCount);
-            $userCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT userid) AS c')->group('house_id')->where("house_id IN ({$houseIds})")->query();
+            $userCount = $this->coreModel->table('list')->mode('select')->field('house_id,COUNT(DISTINCT userid) AS c')->group('house_id')->where("house_id IN ({$houseIds}) AND valid=1")->query();
             $houseIdToUserCount = array_key_values('house_id', $userCount);
             $userInfo = $this->coreModel->table('user')->mode('select')->field('*')->where("id IN ({$userids})")->query();
             $useridToUserinfo = array_key_values('id', $userInfo);
@@ -86,12 +86,12 @@ class index extends coreController {
     public function getFoodList()
     {
         $this->param('houseId');
-        $ifHouseExist = $this->coreModel->table('house')->mode('select')->where("id={$this->params['houseId']}")->query();
+        $ifHouseExist = $this->coreModel->table('house')->mode('select')->where("id={$this->params['houseId']} AND valid=0")->query();
         if (empty($ifHouseExist)) {
             ajax(400, '这个房间id不存在');
         }
 
-        $foodList = $this->coreModel->table('list')->mode('select')->where("house_id={$this->params['houseId']}")->order(['create_time DESC'])->query();
+        $foodList = $this->coreModel->table('list')->mode('select')->where("house_id={$this->params['houseId']} AND valid=1")->order(['create_time DESC'])->query();
         $userids = "'".implode("','", array_column($foodList, 'userid'))."'";
         $userInfo = $this->coreModel->table('user')->mode('select')->field('*')->where("id IN ({$userids})")->query();
         $useridToUserinfo = array_key_values('id', $userInfo);
