@@ -10,6 +10,7 @@ class coreController
 
     public  function __construct()
     {
+        crossDomain();
         $this->accountModel = new accountModel();
     }
 
