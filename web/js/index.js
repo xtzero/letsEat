@@ -35,13 +35,6 @@ function param(par){
     return get_par;
 }
 
-function getClientSign(cb){
-    var fp=new Fingerprint2();
-    fp.get(function(result){
-        cb && cb(result);
-    });
-}
-
 function rand(minNum,maxNum){
     return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10); 
 }
@@ -103,4 +96,92 @@ function dxever_numToTime(nums,full){
 			return year+'-'+mon+'-'+day+' '+hour+':'+mins;
 		}
 	}
+}
+
+function bin2hex(bin){
+    var i=0, l=bin.length,chr,hex='';
+    for (i; i < l; ++i){
+        chr=bin.charCodeAt(i).toString(16);
+        hex+=chr.length<2 ? '0'+chr : chr;
+    }
+    return hex;
+}
+
+function canvas_id(){
+    var canvas=document.createElement('canvas');
+    var ctx=canvas.getContext('2d');
+    var txt='http://eular.github.io';
+    ctx.textBaseline='top';
+    ctx.font="14px 'Arial'";
+    ctx.fillStyle='#0ff';
+    ctx.fillRect(0,0,140,50);
+    ctx.fillStyle='#00f';
+    ctx.fillText(txt,2,15);
+    ctx.fillStyle='rgba(102,204,0,0.7)';
+    ctx.fillText(txt,4,17);
+
+    var b64=canvas.toDataURL().replace('data:image/png;base64,','');
+    var bin=atob(b64);
+    var crc=bin2hex(bin.slice(-16,-12));
+    return crc;
+}
+
+function setCookie(name,value){
+	var Days = 30;
+	var exp = new Date();
+	exp.setTime(exp.getTime() + Days*24*60*60*1000);
+	document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+}
+
+function getCookie(name){
+	var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+	if(arr=document.cookie.match(reg))
+	return unescape(arr[2]);
+	else
+	return null;
+}
+
+function getClientSign(cb){
+	var getSignFromCookie = getCookie('xtLetseatSign');
+	if (!getSignFromCookie) {
+		var newSign = rand(11111111,99999999);
+		setCookie('xtLetseatSign',newSign);
+		result = newSign;
+	} else {
+		result = getSignFromCookie;
+	}
+    cb && cb(result);
+}
+
+function checkUserExist(existCb)
+{
+	getClientSign(function(userid){
+		get('getUser', {
+			'userid': userid
+		}, function(res) {
+			if (res.code == 200) {
+				if (res.msg == '该用户不存在') {
+					var name = prompt(userid+'是一个新的userid，给自己起个名字吧。', '输入一个响亮的名字，例如：yoyo姐');
+					get('addUser', {
+						userid: userid,
+						name: name
+					}, function(res2){
+						if (res2.code == 200) {
+							existCb && existCb(userid);
+						} else {
+							alert(res2.msg);
+						}
+					});
+				} else {
+					existCb && existCb(userid);
+				}
+			} else {
+				alert(res.msg);
+			}
+		});
+	});
+}
+
+function jumpToMain(){
+	window.location.href = 'main.html';
 }

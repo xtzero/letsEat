@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>房间列表 | yoyo点菜台</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
-    <script src="js/fingerprint2.min.1.5.1.js"></script>
     <script src="js/index.js"></script>
     <style type="text/css">
         body{
@@ -341,34 +340,7 @@
             },
             created(){
                 var _this = this;
-                getClientSign(function(userid){
-                    _this.currentUser = userid
-                    get('getUser', {
-                        'userid': userid
-                    }, function(res) {
-                        if (res.code == 200) {
-                            if (res.msg == '该用户不存在') {
-                                var name = prompt("你是新来的，给自己起个名字吧。\n例如：yoyo姐");
-                                if (name != null && name != '') {
-                                    get('addUser', {
-                                        userid: userid,
-                                        name: name
-                                    }, function(res2){
-                                        if (res2.code == 200) {
-                                            
-                                        } else {
-                                            alert(res2.msg);
-                                        }
-                                    });
-                                } else {
-                                    window.location.reload();
-                                }
-                            }
-                        } else {
-                            alert(res.msg);
-                        }
-                    });
-                });     
+                checkUserExist();
                 this.getHouseList();
                 this.getSay();
             }
