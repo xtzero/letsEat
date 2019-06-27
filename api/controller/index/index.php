@@ -207,6 +207,6 @@ class index extends coreController {
 
    public function testIp()
    {
-       var_dump($_SERVICE);
+       var_dump($_SERVER);
    }
 }
