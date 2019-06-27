@@ -340,7 +340,9 @@
             },
             created(){
                 var _this = this;
-                checkUserExist();
+                checkUserExist(function(userid){
+                    _this.currentUser = userid;
+                });
                 this.getHouseList();
                 this.getSay();
             }
