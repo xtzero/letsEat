@@ -14,5 +14,6 @@ return [
     'delEat' => 'index/index/delEat',
     'getHouseDetail' => 'index/index/getHouseDetail',
     'addSays' => 'index/index/addSays',
-    'getSays' => 'index/index/getSays'
+    'getSays' => 'index/index/getSays',
+    'testIp' => 'index/index/testIp'
 ];

@@ -204,4 +204,9 @@ class index extends coreController {
        $getSays = $this->coreModel->table('says')->mode('select')->join('left join user u on says.create_user=u.id')->field('says.*,u.name as username')->query();
        ajax(200, '', $getSays);
    }
+
+   public function testIp()
+   {
+       var_dump($_SERVICE);
+   }
 }
