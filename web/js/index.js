@@ -162,6 +162,9 @@ function checkUserExist(existCb)
 			if (res.code == 200) {
 				if (res.msg == '该用户不存在') {
 					var name = prompt(userid+'是一个新的userid，给自己起个名字吧。', '输入一个响亮的名字，例如：yoyo姐');
+					if (!name) {
+						window.location.reload();
+					}
 					get('addUser', {
 						userid: userid,
 						name: name
