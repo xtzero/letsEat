@@ -6,6 +6,7 @@
     <title>今天吃这么多 | yoyo点菜台</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
     <script src="js/index.js"></script>
+    <script src="js/wx.js"></script>
     <style type="text/css">
         body{
             background-color: #34537c;
@@ -199,6 +200,18 @@
             margin-left: 5px;
             font-weight: 900;
         }
+
+        .shareText{
+            font-size: 50px;
+            text-align: center;
+            margin-top: 66px;
+        }
+
+        .shareText2{
+            font-size: 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -226,7 +239,7 @@
                 </div>
             </div>
         </div>
-        <div class="mask" v-show="showPop">
+        <div class="mask" v-show="showPop" @click="showPop=false">
             <div class="pop">
                 <div class="pop-close" @click="showPop=false">×</div>
                 <div class="pop-title">{{pop.title}}</div>
@@ -236,6 +249,10 @@
                 <input type="text" name="title" id="title" class="text" v-model="addNew.subtitle">
                 <div class="pop-btn" @click="addNewF">添 加</div>
             </div>
+        </div>
+        <div class="mask" v-show="showSharePop" @click="showSharePop=false">
+            <div class="shareText">点击右上角按钮，分享给朋友吧</div>
+            <div class="shareText2">点击任意处关闭</div>
         </div>
     </div>
     <script>
@@ -261,7 +278,8 @@
                 },
                 listErrorTip: '',
                 houseDetail: {},
-                second: 3
+                second: 3,
+                showSharePop: false
             },
             methods: {
                 getFoodList(){
@@ -300,8 +318,15 @@
                     }
                 },
                 share(){
-                    document.title = '在？一起订饭不？';
-                    alert('将当前页面分享给好友，好友点击链接即可参与~');
+                    var _this = this;
+                    var shareText = [
+                        '在？「|title|」，差你一个',
+                        '今天吃「|title|」，快上车！'
+                    ];
+
+                    var randText = shareText[rand(0, shareText.length-1)];
+                    document.title = randText.replace('|title|', _this.houseDetail.detail.title);
+                    this.showSharePop = true;
                 },
                 dxever_numToTime(time){
                     return dxever_numToTime((Date.parse(time)/1000))
