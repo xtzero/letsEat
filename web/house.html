@@ -239,7 +239,7 @@
                 </div>
             </div>
         </div>
-        <div class="mask" v-show="showPop" @click="showPop=false">
+        <div class="mask" v-show="showPop">
             <div class="pop">
                 <div class="pop-close" @click="showPop=false">×</div>
                 <div class="pop-title">{{pop.title}}</div>
@@ -250,9 +250,9 @@
                 <div class="pop-btn" @click="addNewF">添 加</div>
             </div>
         </div>
-        <div class="mask" v-show="showSharePop" @click="showSharePop=false">
+        <div class="mask" v-show="showSharePop">
             <div class="shareText">点击右上角按钮，分享给朋友吧</div>
-            <div class="shareText2">点击任意处关闭</div>
+            <div class="shareText2" @click="showSharePop=false">点击关闭</div>
         </div>
     </div>
     <script>
